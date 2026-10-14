@@ -10,7 +10,7 @@
 //Part 1: Ask the user for his information about his trip. How many miles he did on his trip, the price per gallon of his veichile and how much he paid
 // Requests the user as well for numbers of pizza bought and their cost to make the calculation of the total price of the trip
 
-//Constants
+//Constants (Im still confused if this is what you Professor meant that we should change TAX_RATE constant name to taxRate to match the professor example, i hope im doing it right)
 const int numberOfSlicesPerPizza = 8;
 const double taxRate = 0.18;
 
@@ -20,7 +20,7 @@ Console.Write("How many miles is your Trip? ");
 double miles = Convert.ToDouble(Console.ReadLine());
 
 Console.Write("How much Miles per Gallon does your car use? ");
-double milePerGallon = Convert.ToDouble(Console.ReadLine());
+double milesPerGallon = Convert.ToDouble(Console.ReadLine());
 
 Console.Write("Whats the price per Gallon you paid? ");
 double pricePerGallon = Convert.ToDouble(Console.ReadLine());
@@ -32,7 +32,7 @@ Console.Write("How much is the cost of each Pizza? ");
 double pricePerPizza = Convert.ToDouble(Console.ReadLine());
 
 //variables for trip calculations
-double fuelCost = FuelCost(miles, milePerGallon, pricePerGallon);
+double fuelCost = FuelCost(miles, milesPerGallon, pricePerGallon);
 double pizzaCost = numberOfPizzasBought * pricePerPizza;
 double tripTotal = fuelCost + pizzaCost;
 
@@ -41,6 +41,7 @@ Console.WriteLine("Fuel cost: " + fuelCost.ToString("C"));
 Console.WriteLine("Pizza cost: " + pizzaCost.ToString("C"));
 Console.WriteLine("Trip total: " + tripTotal.ToString("C"));
 
+//Part 2: Putting the group in an array and doing more calculations for the trip: like how many people are going, the cost for each person individually and how many slices each person is having
 Console.WriteLine("\n=== Part 2: The Group ===");
 
 //arrays with the group name and work information
@@ -59,22 +60,48 @@ Console.WriteLine("People going: " + peopleGoing);
 Console.WriteLine("Slices each: " + slicesEach.ToString("F1"));
 Console.WriteLine("Cost per person: " + costPerPerson.ToString("C"));
 
+//Part 3: Calculations about the individual and total hours worked from everyone as well as total and invidvidual take home pay, the report of work needed
+Console.WriteLine("\n=== Part 3: Who Works How Long ===");
+
+//varibales for the information about how much people work and how much they actually get back home after taxes
+double totalHours = 0;
+double totalTakeHome = 0;
+double longest = 0;
+
+// for loop to get the values of each person and displaying it to the user to see how long everyone works and how long everyone needs to work to cover ammount owed as well as total 
+for (int i = 0; i < names.Length; i++)
+{
+    double takeHome = TakeHomePay(hoursWorked[i], hourlyRates[i], taxRate);
+    double takeHomePerHour = takeHome / hoursWorked[i];
+    double hoursNeeded = HoursToCover(costPerPerson, takeHomePerHour);
+
+    totalHours += hoursWorked[i];
+    totalTakeHome += takeHome;
+    longest = Math.Max(longest, hoursNeeded);
+//(Hello again professor, i kept trying to do this using interpolation with the $ but i couldnt get the toString convertion to work, whats the better and cleaner way of doing this?)
+    Console.WriteLine(names[i] + ": takes home " + takeHome.ToString("C") + " for " + hoursWorked[i].ToString("F0") + " hours, " + takeHomePerHour.ToString("C") + " per hour, must work " + hoursNeeded.ToString("F2") + " hours");
+}
+//displaying the information to the user about total time worked, total take home pay and the longest anyone needs to work
+Console.WriteLine("\nTotal hours worked: " + totalHours.ToString("F0"));
+Console.WriteLine("Total take home pay: " + totalTakeHome.ToString("C"));
+Console.WriteLine("Longest anyone must work: " + longest.ToString("F2"));
+
 //Methods
 
-//Calculates the cost of the fuel for the trip, and returns the total fuel cost money based on how many miles travelled and the respective price of miles per galon
+//calculates the cost of the fuel for the trip, and returns the total fuel cost money based on how many miles travelled and the respective price of miles per galon
 static double FuelCost(double miles, double milesPerGallon, double pricePerGallon)
 {
     double gallonsNeeded = miles / milesPerGallon;
     return gallonsNeeded * pricePerGallon;
 }
-// Calculates total money brought home after removing taxes, returns that respective ammount of money taken home after taxes based on hours worked, how much paid per hour and value of tax rate
+//calculates total money brought home after removing taxes, returns that respective ammount of money taken home after taxes based on hours worked, how much paid per hour and value of tax rate
 static double TakeHomePay(double hours, double hourlyRate, double taxRate)
 {
     double grossPay = hours * hourlyRate;
     double taxWithheld = grossPay * taxRate;
     return grossPay - taxWithheld;
 }
-// Calculates how many hours of work are needed to pay for an certain amount of money owed, returns numbers of hours of work needed for the respective amount owed based on take home payment per hour and how much is the value owed
+//calculates how many hours of work are needed to pay for an certain amount of money owed, returns numbers of hours of work needed for the respective amount owed based on take home payment per hour and how much is the value owed
 static double HoursToCover(double amountOwed, double takeHomePerHour)
 {
     return amountOwed / takeHomePerHour;
